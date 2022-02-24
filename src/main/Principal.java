@@ -9,20 +9,21 @@ import jogodavelha.Dominio.JogoDaVelha;
 public class Principal {
 
 	public static void main(String[] args) {
-		final int NUMEROS_JOGADORES = 2;
 		Scanner sc = new Scanner(System.in);
+		final int NUMEROS_JOGADORES = 2;
+		int linha;
+		int coluna;
+		int quantidadeDeJogadas = 0;
+		int tamanhoTabuleiroInt = 0;
 		boolean partidaFinalizada = false;
 		boolean partidaEmAndamento = true;
 		boolean jogadaRealizada = false;
-		int tamanhoTabuleiroInt = 0;
 		boolean valorValidoTamanhoTabuleiro = false;
 		String tamanhoTabuleiroString = null;
-		ArrayList<Jogador> jogadores = new ArrayList<>();
-		String[] simbolos = {"X","O"};
-		int linha;
-		int coluna;
 		String posicao;
-		int quantidadeDeJogadas = 0;
+		String[] simbolos = {"X","O"};
+		JogoDaVelha jogoCriado;
+		ArrayList<Jogador> jogadores = new ArrayList<>();
 
 		for(int x = 0; x < NUMEROS_JOGADORES; x++)
 		{
@@ -40,7 +41,6 @@ public class Principal {
 				if(tamanhoTabuleiroInt > 0) valorValidoTamanhoTabuleiro = true;
 			}
 		}
-		JogoDaVelha jogoCriado = new JogoDaVelha(tamanhoTabuleiroInt);
 		System.out.println("Primeiro jogador joga com X e segundo jogador, com O");
 		while(!partidaFinalizada)
 		{
@@ -109,6 +109,7 @@ public class Principal {
 				System.out.println(jogador.toString());
 
 		}
+		sc.close();
 	}
 
 	private static int retornarValor(String tamanhoTabuleiroString) {
