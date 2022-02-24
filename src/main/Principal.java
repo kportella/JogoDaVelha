@@ -1,5 +1,6 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import jogodavelha.Dominio.Jogador;
@@ -8,62 +9,133 @@ import jogodavelha.Dominio.JogoDaVelha;
 public class Principal {
 
 	public static void main(String[] args) {
-		
+		final int NUMEROS_JOGADORES = 2;
 		Scanner sc = new Scanner(System.in);
 		boolean partidaFinalizada = false;
-		
-		System.out.println("Digite o nome do primeiro jogador");
-		String nome = sc.next();
-		Jogador jogador1 = new Jogador(nome);
-		System.out.println("Digite o nome do segundo jogador");
-		nome = sc.next();
-		Jogador jogador2 = new Jogador(nome);
-		
-		System.out.println("Digite o tamanho do jogo");
-		int tamanhoTabuleiro = sc.nextInt();
-		
-		JogoDaVelha jogoCriado = new JogoDaVelha(tamanhoTabuleiro);
+		boolean partidaEmAndamento = true;
+		boolean jogadaRealizada = false;
+		int tamanhoTabuleiroInt = 0;
+		boolean valorValidoTamanhoTabuleiro = false;
+		String tamanhoTabuleiroString = null;
+		ArrayList<Jogador> jogadores = new ArrayList<>();
+		String[] simbolos = {"X","O"};
+		int linha;
+		int coluna;
+		String posicao;
+		int quantidadeDeJogadas = 0;
+
+		for(int x = 0; x < NUMEROS_JOGADORES; x++)
+		{
+			System.out.println("Digite o nome do jogador " + (x+1));
+			jogadores.add(criarJogador(sc));
+		}
+
+		while(!valorValidoTamanhoTabuleiro) {
+			System.out.println("Digite o tamanho do tabuleiro(Valor inteiro maior que 1):");
+			tamanhoTabuleiroString = sc.next();
+			boolean valorParsed = verificarInt(tamanhoTabuleiroString);
+			if (valorParsed)
+			{
+				tamanhoTabuleiroInt = retornarValor(tamanhoTabuleiroString);
+				if(tamanhoTabuleiroInt > 0) valorValidoTamanhoTabuleiro = true;
+			}
+		}
+		JogoDaVelha jogoCriado = new JogoDaVelha(tamanhoTabuleiroInt);
 		System.out.println("Primeiro jogador joga com X e segundo jogador, com O");
 		while(!partidaFinalizada)
 		{
-			int linha;
-			int coluna;
-			String posicao;
-			boolean jogoGanho = false;
-			jogoCriado = new JogoDaVelha(tamanhoTabuleiro);
+			jogoCriado = new JogoDaVelha(tamanhoTabuleiroInt);
 			while(true)
 			{
-				System.out.println(jogoCriado.toString());
-				System.out.println("Jogador 1: Digite qual posicao voce quer jogar(linha,coluna)");
-				posicao = sc.next();
-				linha = Integer.parseInt(posicao.split(",")[0]);
-				coluna = Integer.parseInt(posicao.split(",")[1]);
-				jogoCriado.realizaJogada(linha, coluna, "X");
-				if(jogoCriado.verificaGanhador())
-				{
-					jogador1.setPontos(jogador1.getPontos() + 1);
-					break;
-				}
-				
-				System.out.println("Jogador 2: Digite qual posicao voce quer jogar(linha,coluna)");
-				posicao = sc.next();
-				linha = Integer.parseInt(posicao.split(",")[0]);
-				coluna = Integer.parseInt(posicao.split(",")[1]);
-				jogoCriado.realizaJogada(linha, coluna, "O");
-				if(jogoCriado.verificaGanhador())
-				{
-					jogador2.setPontos(jogador2.getPontos() + 1);
-					break;
-				}
-				
-			}
-			System.out.println("Quer jogar outra partida? S/n");
-			String escolhaContinuar = sc.next();
-			if(escolhaContinuar.toLowerCase().compareTo("n") == 0) partidaFinalizada = true;
-		}
-		
-		
+				partidaEmAndamento = true;
+				while(partidaEmAndamento) {
+					for (int x = 0; x < NUMEROS_JOGADORES; x++) {
+						System.out.println(jogoCriado.toString());
 
+						while(!jogadaRealizada) {
+							while (true) {
+								System.out.println("Jogador " + (x + 1) + ": Digite qual posicao voce quer jogar(linha,coluna)");
+								posicao = sc.next();
+								if (isInteger(posicao.split(",")[0])
+										&& isInteger(posicao.split(",")[1])) break;
+								else System.out.println("Digite posição valida!");
+							}
+							linha = Integer.parseInt(posicao.split(",")[0]);
+							coluna = Integer.parseInt(posicao.split(",")[1]);
+
+							jogadaRealizada = jogoCriado.realizaJogada(linha, coluna, simbolos[x]);
+							if (!jogadaRealizada) System.out.println("Posicao ja ocupada! Escolha outra");
+							else jogadaRealizada = true;
+						}
+						jogadaRealizada = false;
+						if (jogoCriado.verificaGanhador()) {
+							System.out.println(jogoCriado.toString());
+							jogadores.get(x).setPontos(jogadores.get(x).getPontos() + 1);
+							partidaEmAndamento = false;
+							break;
+						}
+						quantidadeDeJogadas++;
+						if(quantidadeDeJogadas == tamanhoTabuleiroInt*tamanhoTabuleiroInt)
+						{
+							System.out.println("Partida empatada!");
+							partidaEmAndamento = false;
+							break;
+						}
+					}
+				}
+				quantidadeDeJogadas = 0;
+				break;
+			}
+			while(true) {
+				System.out.println("Quer jogar outra partida? S/n");
+				String escolhaContinuar = sc.next();
+				if (escolhaContinuar.toLowerCase().compareTo("n") == 0) {
+					partidaFinalizada = true;
+					break;
+				}
+				else if (escolhaContinuar.toLowerCase().compareTo("s") == 0) break;
+				System.out.println("Escolha S para sim ou N para nao");
+			}
+		}
+		System.out.println("INFORMAÇÃO DO GANHADOR: ");
+		if (jogadores.get(0).getPontos() > jogadores.get(1).getPontos())
+			System.out.println(jogadores.get(0).toString());
+		else if(jogadores.get(0).getPontos() < jogadores.get(1).getPontos())
+			System.out.println(jogadores.get(1).toString());
+		else
+		{
+			System.out.println("Jogadores empatadas!");
+			for (Jogador jogador : jogadores)
+				System.out.println(jogador.toString());
+
+		}
+	}
+
+	private static int retornarValor(String tamanhoTabuleiroString) {
+		int tamanhoTabuleiro = Integer.parseInt(tamanhoTabuleiroString);
+		if (tamanhoTabuleiro <= 1) {
+			System.out.println("Digite um valor inteiro válido!");
+			return 0;
+		} else return tamanhoTabuleiro;
+	}
+
+	private static boolean verificarInt(String tamanhoTabuleiroString) {
+		if (!isInteger(tamanhoTabuleiroString)) {
+			System.out.println("Digite um valor inteiro válido!");
+			return false;
+		}
+		return true;
+	}
+
+	private static Jogador criarJogador(Scanner sc) {
+		String nome;
+		nome = sc.next();
+		return (new Jogador(nome));
+	}
+
+
+	private static boolean isInteger(String str) {
+		return str != null && str.matches("[0-9]*");
 	}
 
 }

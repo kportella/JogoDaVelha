@@ -9,6 +9,7 @@ public class GanharDiagonalDispenser extends VerificarGanhadorDispenser {
 		
 		for (int posicao = 0; posicao < jogoDaVelha.getTabuleiro().length; posicao++)
 		{
+			jogoDaVelha.setGanhouJogo(true);
 			if(posicao+1 == jogoDaVelha.getTabuleiro().length)
 			{
 				break;
@@ -19,30 +20,28 @@ public class GanharDiagonalDispenser extends VerificarGanhadorDispenser {
 			{
 				jogoDaVelha.setGanhouJogo(false);
 				break;
-			}	
+			}
 		}
-		jogoDaVelha.setGanhouJogo(true);
-		for (int linha = jogoDaVelha.getTabuleiro().length -1; 
-				linha >= 0; linha--)
-		{
-			for (int coluna = jogoDaVelha.getTabuleiro().length -1; 
-					coluna >= 0; coluna--)
-			{
-				if(coluna + linha == jogoDaVelha.getTabuleiro().length -1)
-				{
-					if(linha+1 == jogoDaVelha.getTabuleiro().length) break;
-					if (coluna-1 == -1) break;
-					if(jogoDaVelha.getTabuleiro()[linha][coluna] 
-							!= jogoDaVelha.getTabuleiro()[linha+1][coluna-1]
-							|| jogoDaVelha.getTabuleiro()[linha][coluna] == null)
-					{
-						jogoDaVelha.setGanhouJogo(false);
-						break;
+		if(!jogoDaVelha.isGanhouJogo()) {
+			jogoDaVelha.setGanhouJogo(true);
+			for (int linha = jogoDaVelha.getTabuleiro().length - 1;
+				 linha >= 0; linha--) {
+				for (int coluna = jogoDaVelha.getTabuleiro().length - 1;
+					 coluna >= 0; coluna--) {
+					if (coluna + linha == jogoDaVelha.getTabuleiro().length - 1) {
+						if (linha + 1 == jogoDaVelha.getTabuleiro().length) break;
+						if (coluna - 1 == -1) break;
+						if (jogoDaVelha.getTabuleiro()[linha][coluna]
+								!= jogoDaVelha.getTabuleiro()[linha + 1][coluna - 1]
+								|| jogoDaVelha.getTabuleiro()[linha][coluna] == null) {
+							jogoDaVelha.setGanhouJogo(false);
+							break;
+						}
 					}
 				}
 			}
+			if (!jogoDaVelha.isGanhouJogo() && this.nextDispenser != null) this.nextDispenser.dispense(jogoDaVelha);
 		}
-		if(!jogoDaVelha.isGanhouJogo() && this.nextDispenser != null) this.nextDispenser.dispense(jogoDaVelha);
 	}
 
 }
